@@ -13,6 +13,20 @@
         android:theme="@style/Theme.GardenMaps"
         tools:targetApi="31">
         <activity
+            android:name=".AddTreeActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".PlotMapActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".AddPlotActivity"
             android:exported="false">
             <meta-data
@@ -32,10 +46,11 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
         <provider
-            android:authorities="com.example.gardenmaps"
             android:name=".data.GardenMapsContentProvider"
-            android:exported="false"/>
+            android:authorities="com.example.gardenmaps"
+            android:exported="false" />
 
         <meta-data
             android:name="preloaded_fonts"

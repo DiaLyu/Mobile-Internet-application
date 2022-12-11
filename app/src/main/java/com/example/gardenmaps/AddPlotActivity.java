@@ -6,6 +6,7 @@ import androidx.core.app.NavUtils;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -51,6 +52,8 @@ public class AddPlotActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.save_plot:
                 insertPlot();
+                Intent intent = new Intent(AddPlotActivity.this, PlotMapActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.delete_plot:
                 return true;

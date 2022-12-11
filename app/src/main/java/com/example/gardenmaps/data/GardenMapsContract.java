@@ -16,6 +16,7 @@ public final class GardenMapsContract {
     public static final String SCHEME = "content://";
     public static final String AUTHORITY = "com.example.gardenmaps";
     public static final String PATH_PLOTS = "plot_land";
+    public static final String PATH_TREES = "tree_plot";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse(SCHEME + AUTHORITY);
 
@@ -40,6 +41,31 @@ public final class GardenMapsContract {
         public static final String CONTENT_MULTIPLE_ITEMS = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + AUTHORITY + "/" + PATH_PLOTS;
         // mime type, который будет использоваться при передаче для работы с одной строкой
         public static final String CONTENT_SINGLE_ITEM = ContentResolver.CURSOR_ITEM_BASE_TYPE +"/" + AUTHORITY + "/" + PATH_PLOTS;
+    }
+
+    public static final class TreeInfo {
+
+        // название таблицы
+        public static final String TABLE_NAME = "tree_plot";
+
+        // свойства таблицы
+        public static final String KEY_ID = BaseColumns._ID;
+        public static final String KEY_PLOT_ID = "id_plot";
+        public static final String KEY_TREE_NAME = "name_tree";
+        public static final String KEY_TREE_VARIETY = "tree_variety";
+        public static final String KEY_TREE_DATA_PLANTING = "data_planting";
+        public static final String KEY_TREE_WIKIPEDIA = "wikipedia";
+        public static final String KEY_TREE_X_LOCATION = "x_location";
+        public static final String KEY_TREE_Y_LOCATION = "y_location";
+
+        public static final Uri CONTENT_URI =
+                Uri.withAppendedPath(BASE_CONTENT_URI, PATH_TREES);
+
+        // mime type, который будет использоваться при передаче для работы с несколькими строками
+        public static final String CONTENT_MULTIPLE_ITEMS = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + AUTHORITY + "/" + PATH_TREES;
+        // mime type, который будет использоваться при передаче для работы с одной строкой
+        public static final String CONTENT_SINGLE_ITEM = ContentResolver.CURSOR_ITEM_BASE_TYPE +"/" + AUTHORITY + "/" + PATH_TREES;
+
     }
 
 }

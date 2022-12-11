@@ -19,6 +19,8 @@ public class GardenMapsContentProvider extends ContentProvider {
 
     private static final int PLOTS = 111;   // код для работы со всей таблицей
     private static final int PLOT_ID = 222; // код для работы с отдельной записью в таблице PLOTS
+    private static final int TREES = 333;
+    private static final int TREES_ID = 444;
 
     // Creates a UriMatcher object.
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -27,6 +29,8 @@ public class GardenMapsContentProvider extends ContentProvider {
 
         uriMatcher.addURI(GardenMapsContract.AUTHORITY, GardenMapsContract.PATH_PLOTS, PLOTS);
         uriMatcher.addURI(GardenMapsContract.AUTHORITY, GardenMapsContract.PATH_PLOTS + "/#", PLOT_ID);
+        uriMatcher.addURI(GardenMapsContract.AUTHORITY, GardenMapsContract.PATH_TREES, TREES);
+        uriMatcher.addURI(GardenMapsContract.AUTHORITY, GardenMapsContract.PATH_TREES + "/#", TREES_ID );
     }
 
     @Override
@@ -52,6 +56,15 @@ public class GardenMapsContentProvider extends ContentProvider {
                                                                                     // в значение типа long
                 cursor = db.query(PlotLand.TABLE_NAME, strings, s, strings1, null, null, s1);
                 break;
+            case TREES:
+                cursor = db.query(TreeInfo.TABLE_NAME, strings, s, strings1, null, null, s1);
+                break;
+            case TREES_ID:
+                s = TreeInfo.KEY_ID + "=?"; // параметр отбора
+                strings1 = new String[] {String.valueOf(ContentUris.parseId(uri))}; // преобразование uri
+                // в значение типа long
+                cursor = db.query(TreeInfo.TABLE_NAME, strings, s, strings1, null, null, s1);
+                break;
             default:
                 Toast.makeText(getContext(), "Incorrect URI", Toast.LENGTH_LONG).show();
                 throw new IllegalArgumentException("Can't query incorrect URI " + uri);
@@ -69,6 +82,12 @@ public class GardenMapsContentProvider extends ContentProvider {
 
             case PLOT_ID:
                 return PlotLand.CONTENT_SINGLE_ITEM;
+
+            case TREES:
+                return TreeInfo.CONTENT_MULTIPLE_ITEMS;
+
+            case TREES_ID:
+                return TreeInfo.CONTENT_SINGLE_ITEM;
 
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -116,6 +135,14 @@ public class GardenMapsContentProvider extends ContentProvider {
                 }
                 return ContentUris.withAppendedId(uri, id);
 
+            case TREES:
+                long id_tree = db.insert(TreeInfo.TABLE_NAME, null, contentValues);
+                if(id_tree == -1){
+                    Log.e("insertMethod", "Inserting of data in the table failed for " + uri);
+                    return null;
+                }
+                return ContentUris.withAppendedId(uri, id_tree);
+
             default:
                 throw new IllegalArgumentException("Inserting of data in the table failed for " + uri);
         }
@@ -135,6 +162,14 @@ public class GardenMapsContentProvider extends ContentProvider {
                 s = PlotLand.KEY_ID + "=?"; // параметр отбора
                 strings = new String[] {String.valueOf(ContentUris.parseId(uri))};
                 return db.delete(PlotLand.TABLE_NAME, s, strings);
+
+            case TREES:
+                return db.delete(TreeInfo.TABLE_NAME, s, strings);
+
+            case TREES_ID:
+                s = TreeInfo.KEY_ID + "=?"; // параметр отбора
+                strings = new String[] {String.valueOf(ContentUris.parseId(uri))};
+                return db.delete(TreeInfo.TABLE_NAME, s, strings);
 
             default:
                 throw new IllegalArgumentException("Can't delete this URI " + uri);
@@ -191,6 +226,14 @@ public class GardenMapsContentProvider extends ContentProvider {
                 s = PlotLand.KEY_ID + "=?"; // параметр отбора
                 strings = new String[] {String.valueOf(ContentUris.parseId(uri))};
                 return db.update(PlotLand.TABLE_NAME, contentValues, s, strings);
+
+            case TREES:
+                return db.update(TreeInfo.TABLE_NAME, contentValues, s, strings);
+
+            case TREES_ID:
+                s = TreeInfo.KEY_ID + "=?"; // параметр отбора
+                strings = new String[] {String.valueOf(ContentUris.parseId(uri))};
+                return db.update(TreeInfo.TABLE_NAME, contentValues, s, strings);
 
             default:
                 throw new IllegalArgumentException("Can't update this URI " + uri);
