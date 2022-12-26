@@ -37,8 +37,9 @@ public class GardenMapsDBOpenHelper extends SQLiteOpenHelper {
                 + TreeInfo.KEY_TREE_Y_LOCATION + " INTEGER, "
                 + "FOREIGN KEY(" + TreeInfo.KEY_ID + ") REFERENCES "
                 + PlotLand.TABLE_NAME + "(" + PlotLand.KEY_ID  + "));";
-        String result_query = CREATE_PLOTS_TABLE + CREATE_TREES_TABLE;
-        sqLiteDatabase.execSQL(result_query);
+//        String result_query = CREATE_PLOTS_TABLE + CREATE_TREES_TABLE;
+        sqLiteDatabase.execSQL(CREATE_PLOTS_TABLE);
+        sqLiteDatabase.execSQL(CREATE_TREES_TABLE);
     }
 
     @Override

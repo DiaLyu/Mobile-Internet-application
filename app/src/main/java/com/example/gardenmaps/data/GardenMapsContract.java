@@ -10,13 +10,13 @@ public final class GardenMapsContract {
     private GardenMapsContract(){}
 
     public static final String DATABASE_NAME = "GardenMaps"; // название базы данных
-    public static final int DATABASE_VERSION = 1;            // версия юазы данных
+    public static final int DATABASE_VERSION = 2;            // версия юазы данных
 
     // работа с Uri
     public static final String SCHEME = "content://";
     public static final String AUTHORITY = "com.example.gardenmaps";
-    public static final String PATH_PLOTS = "plot_land";
-    public static final String PATH_TREES = "tree_plot";
+    public static final String PATH_PLOTS = "plotland";
+    public static final String PATH_TREES = "treeplot";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse(SCHEME + AUTHORITY);
 

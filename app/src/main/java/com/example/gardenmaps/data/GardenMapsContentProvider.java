@@ -69,6 +69,9 @@ public class GardenMapsContentProvider extends ContentProvider {
                 Toast.makeText(getContext(), "Incorrect URI", Toast.LENGTH_LONG).show();
                 throw new IllegalArgumentException("Can't query incorrect URI " + uri);
         }
+
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
         return cursor;
     }
 
@@ -98,30 +101,30 @@ public class GardenMapsContentProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
 
-        String plotName = contentValues.getAsString(PlotLand.KEY_PLOT_NAME);
-        if(plotName == null) {
-            throw new IllegalArgumentException("Вы должны ввести название участка");
-        }
-
-        String plotLocation = contentValues.getAsString(PlotLand.KEY_PLOT_LOCATION);
-        if(plotLocation == null) {
-            throw new IllegalArgumentException("Вы должны ввести расположение участка");
-        }
-
-        Integer plotWidth = contentValues.getAsInteger(PlotLand.KEY_PLOT_WIDTH);
-        if(plotWidth == null) {
-            throw new IllegalArgumentException("Вы должны ввести ширину участка");
-        }
-
-        Integer plotLength = contentValues.getAsInteger(PlotLand.KEY_PLOT_LENGTH);
-        if(plotLength == null) {
-            throw new IllegalArgumentException("Вы должны ввести длину участка");
-        }
-
-        String plotDescription = contentValues.getAsString(PlotLand.KEY_PLOT_DESCR);
-        if(plotDescription == null) {
-            throw new IllegalArgumentException("Вы должны ввести описание участка");
-        }
+//        String plotName = contentValues.getAsString(PlotLand.KEY_PLOT_NAME);
+//        if(plotName == null) {
+//            throw new IllegalArgumentException("Вы должны ввести название участка");
+//        }
+//
+//        String plotLocation = contentValues.getAsString(PlotLand.KEY_PLOT_LOCATION);
+//        if(plotLocation == null) {
+//            throw new IllegalArgumentException("Вы должны ввести расположение участка");
+//        }
+//
+//        Integer plotWidth = contentValues.getAsInteger(PlotLand.KEY_PLOT_WIDTH);
+//        if(plotWidth == null) {
+//            throw new IllegalArgumentException("Вы должны ввести ширину участка");
+//        }
+//
+//        Integer plotLength = contentValues.getAsInteger(PlotLand.KEY_PLOT_LENGTH);
+//        if(plotLength == null) {
+//            throw new IllegalArgumentException("Вы должны ввести длину участка");
+//        }
+//
+//        String plotDescription = contentValues.getAsString(PlotLand.KEY_PLOT_DESCR);
+//        if(plotDescription == null) {
+//            throw new IllegalArgumentException("Вы должны ввести описание участка");
+//        }
 
         SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
 
@@ -133,6 +136,9 @@ public class GardenMapsContentProvider extends ContentProvider {
                     Log.e("insertMethod", "Inserting of data in the table failed for " + uri);
                     return null;
                 }
+
+                getContext().getContentResolver().notifyChange(uri, null);
+
                 return ContentUris.withAppendedId(uri, id);
 
             case TREES:
@@ -141,6 +147,9 @@ public class GardenMapsContentProvider extends ContentProvider {
                     Log.e("insertMethod", "Inserting of data in the table failed for " + uri);
                     return null;
                 }
+
+                getContext().getContentResolver().notifyChange(uri, null);
+
                 return ContentUris.withAppendedId(uri, id_tree);
 
             default:
@@ -154,90 +163,124 @@ public class GardenMapsContentProvider extends ContentProvider {
 
         int match = uriMatcher.match(uri);
 
+        int rowsDeleted;
+
         switch (match) {
             case PLOTS:
-                return db.delete(PlotLand.TABLE_NAME, s, strings);
+                rowsDeleted = db.delete(PlotLand.TABLE_NAME, s, strings);
+                break;
 
             case PLOT_ID:
                 s = PlotLand.KEY_ID + "=?"; // параметр отбора
                 strings = new String[] {String.valueOf(ContentUris.parseId(uri))};
-                return db.delete(PlotLand.TABLE_NAME, s, strings);
+                rowsDeleted = db.delete(PlotLand.TABLE_NAME, s, strings);
+                break;
 
             case TREES:
-                return db.delete(TreeInfo.TABLE_NAME, s, strings);
+                rowsDeleted = db.delete(TreeInfo.TABLE_NAME, s, strings);
+                break;
 
             case TREES_ID:
                 s = TreeInfo.KEY_ID + "=?"; // параметр отбора
                 strings = new String[] {String.valueOf(ContentUris.parseId(uri))};
-                return db.delete(TreeInfo.TABLE_NAME, s, strings);
+                rowsDeleted = db.delete(TreeInfo.TABLE_NAME, s, strings);
+                break;
 
             default:
                 throw new IllegalArgumentException("Can't delete this URI " + uri);
         }
+
+        if(rowsDeleted != 0){
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return rowsDeleted;
     }
 
     @Override
     public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
 
-        if (contentValues.containsKey(PlotLand.KEY_PLOT_NAME)) {
-            String plotName = contentValues.getAsString(PlotLand.KEY_PLOT_NAME);
-            if(plotName == null) {
-                throw new IllegalArgumentException("Вы должны ввести название участка");
-            }
-        }
-
-        if(contentValues.containsKey(PlotLand.KEY_PLOT_LOCATION)) {
-            String plotLocation = contentValues.getAsString(PlotLand.KEY_PLOT_LOCATION);
-            if(plotLocation == null) {
-                throw new IllegalArgumentException("Вы должны ввести расположение участка");
-            }
-        }
-
-        if(contentValues.containsKey(PlotLand.KEY_PLOT_WIDTH)){
-            Integer plotWidth = contentValues.getAsInteger(PlotLand.KEY_PLOT_WIDTH);
-            if(plotWidth == null) {
-                throw new IllegalArgumentException("Вы должны ввести ширину участка");
-            }
-        }
-
-        if(contentValues.containsKey(PlotLand.KEY_PLOT_LENGTH)) {
-            Integer plotLength = contentValues.getAsInteger(PlotLand.KEY_PLOT_LENGTH);
-            if(plotLength == null) {
-                throw new IllegalArgumentException("Вы должны ввести длину участка");
-            }
-        }
-
-        if(contentValues.containsKey(PlotLand.KEY_PLOT_DESCR)) {
-            String plotDescription = contentValues.getAsString(PlotLand.KEY_PLOT_DESCR);
-            if(plotDescription == null) {
-                throw new IllegalArgumentException("Вы должны ввести описание участка");
-            }
-        }
+//        if (contentValues.containsKey(PlotLand.KEY_PLOT_NAME)) {
+//            String plotName = contentValues.getAsString(PlotLand.KEY_PLOT_NAME);
+//            if(plotName == null) {
+//                throw new IllegalArgumentException("Вы должны ввести название участка");
+//            }
+//        }
+//
+//        if(contentValues.containsKey(PlotLand.KEY_PLOT_LOCATION)) {
+//            String plotLocation = contentValues.getAsString(PlotLand.KEY_PLOT_LOCATION);
+//            if(plotLocation == null) {
+//                throw new IllegalArgumentException("Вы должны ввести расположение участка");
+//            }
+//        }
+//
+//        if(contentValues.containsKey(PlotLand.KEY_PLOT_WIDTH)){
+//            Integer plotWidth = contentValues.getAsInteger(PlotLand.KEY_PLOT_WIDTH);
+//            if(plotWidth == null) {
+//                throw new IllegalArgumentException("Вы должны ввести ширину участка");
+//            }
+//        }
+//
+//        if(contentValues.containsKey(PlotLand.KEY_PLOT_LENGTH)) {
+//            Integer plotLength = contentValues.getAsInteger(PlotLand.KEY_PLOT_LENGTH);
+//            if(plotLength == null) {
+//                throw new IllegalArgumentException("Вы должны ввести длину участка");
+//            }
+//        }
+//
+//        if(contentValues.containsKey(PlotLand.KEY_PLOT_DESCR)) {
+//            String plotDescription = contentValues.getAsString(PlotLand.KEY_PLOT_DESCR);
+//            if(plotDescription == null) {
+//                throw new IllegalArgumentException("Вы должны ввести описание участка");
+//            }
+//        }
 
         SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
 
         int match = uriMatcher.match(uri);
 
+        int rowsUpdated;
         switch (match) {
             case PLOTS:
-                return db.update(PlotLand.TABLE_NAME, contentValues, s, strings);
+                rowsUpdated = db.update(PlotLand.TABLE_NAME, contentValues, s, strings);
+
+                break;
 
             case PLOT_ID:
                 s = PlotLand.KEY_ID + "=?"; // параметр отбора
                 strings = new String[] {String.valueOf(ContentUris.parseId(uri))};
-                return db.update(PlotLand.TABLE_NAME, contentValues, s, strings);
+                rowsUpdated = db.update(PlotLand.TABLE_NAME, contentValues, s, strings);
+
+                break;
 
             case TREES:
-                return db.update(TreeInfo.TABLE_NAME, contentValues, s, strings);
+                rowsUpdated = db.update(TreeInfo.TABLE_NAME, contentValues, s, strings);
+
+                break;
 
             case TREES_ID:
                 s = TreeInfo.KEY_ID + "=?"; // параметр отбора
                 strings = new String[] {String.valueOf(ContentUris.parseId(uri))};
-                return db.update(TreeInfo.TABLE_NAME, contentValues, s, strings);
+                rowsUpdated = db.update(TreeInfo.TABLE_NAME, contentValues, s, strings);
+
+                break;
 
             default:
                 throw new IllegalArgumentException("Can't update this URI " + uri);
         }
+
+        if(rowsUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return rowsUpdated;
+    }
+
+    public Cursor rawQueryWhere(String tableName, String tableColumn, int meaning){
+        SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+
+        String queryStr = "SELECT * " + tableName + " WHERE " + tableColumn + "=" + meaning;
+        return db.rawQuery(queryStr, null);
     }
 }
 

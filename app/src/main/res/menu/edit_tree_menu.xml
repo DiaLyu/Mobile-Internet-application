@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/save_tree"
+        android:title="Сохранить дерево"
+        android:icon="@drawable/ic_white_save_24"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/delete_tree"
+        android:title="Удалить дерево"
+        android:icon="@drawable/ic_white_delete_forever_24"
+        app:showAsAction="never"
+        />
+</menu>

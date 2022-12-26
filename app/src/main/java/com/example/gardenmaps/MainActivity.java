@@ -1,16 +1,23 @@
 package com.example.gardenmaps;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 
 import android.annotation.SuppressLint;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,7 +27,10 @@ import com.example.gardenmaps.data.GardenMapsContract.PlotLand;
 
 
 // главный экран
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int PLOT_LOADER = 123;
+    PlotCursorAdapter plotCursorAdapter;
 
     ListView dataListView;
 
@@ -31,6 +41,20 @@ public class MainActivity extends AppCompatActivity {
 
         dataListView = findViewById(R.id.dataListView);
 
+        // получение всех данных с нажатой записью в списке и переход к главной карте
+        plotCursorAdapter = new PlotCursorAdapter(this, null, false);
+        dataListView.setAdapter(plotCursorAdapter);
+
+        dataListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(MainActivity.this, PlotMapActivity.class);
+                Uri currentPlotUri = ContentUris.withAppendedId(PlotLand.CONTENT_URI, l);
+                intent.setData(currentPlotUri);
+                startActivity(intent);
+            }
+        });
+
         // переменная с кнопкой добавления нового участка
         FloatingActionButton floatingActionButton = findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -40,35 +64,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        displayData();
-    }
-
-    private void displayData() {
-        String[] projection = {
-                PlotLand.KEY_ID,
-                PlotLand.KEY_PLOT_NAME,
-                PlotLand.KEY_PLOT_LOCATION,
-                PlotLand.KEY_PLOT_WIDTH,
-                PlotLand.KEY_PLOT_LENGTH,
-                PlotLand.KEY_PLOT_DESCR
-        };
-
-        Cursor cursor = getContentResolver().query(
-                PlotLand.CONTENT_URI,
-                projection,
-                null,
-                null,
-                null
-        );
-
-        PlotCursorAdapter cursorAdapter = new PlotCursorAdapter(this, cursor, false);
-        dataListView.setAdapter(cursorAdapter);
-
+        LoaderManager.getInstance(this).initLoader(PLOT_LOADER, null, this);
     }
 
     @Override
@@ -87,5 +84,38 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+
+        String[] projection = {
+                PlotLand.KEY_ID,
+                PlotLand.KEY_PLOT_NAME,
+                PlotLand.KEY_PLOT_LOCATION
+        };
+
+        CursorLoader cursorLoader = new CursorLoader(this,
+                PlotLand.CONTENT_URI,
+                projection,
+                null,
+                null,
+                null
+        );
+
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+
+        plotCursorAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
+        plotCursorAdapter.swapCursor(null);
     }
 }
