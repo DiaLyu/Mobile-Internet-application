@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private class Weather extends AsyncTask<Void, Void, String> {
         private double lat;
         private double lon;
-        private String key = "e346a02ad9bcf046efd2fd3cc9957c6c";
+        private String key = "";
 
         public Weather (double lat, double lon){
             this.lat = lat;
