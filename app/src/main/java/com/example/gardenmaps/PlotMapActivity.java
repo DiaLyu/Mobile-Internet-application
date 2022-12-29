@@ -3,17 +3,26 @@ package com.example.gardenmaps;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NavUtils;
+import androidx.core.content.FileProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,10 +30,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gardenmaps.data.GardenMapsContract.*;
 import com.example.gardenmaps.data.GardenMapsDBOpenHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
 
 public class PlotMapActivity extends AppCompatActivity{
 
@@ -127,7 +142,6 @@ public class PlotMapActivity extends AppCompatActivity{
                             TreeInfo.KEY_TREE_NAME,
                             TreeInfo.KEY_TREE_VARIETY,
                             TreeInfo.KEY_TREE_DATA_PLANTING,
-                            TreeInfo.KEY_TREE_WIKIPEDIA,
                             TreeInfo.KEY_TREE_X_LOCATION,
                             TreeInfo.KEY_TREE_Y_LOCATION
                     };

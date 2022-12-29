@@ -1,5 +1,7 @@
 package com.example.gardenmaps;
 
+import static java.lang.Math.round;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,11 +15,14 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,9 +30,28 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.example.gardenmaps.data.GardenMapsContract.PlotLand;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
+
 
 // главный экран
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private double latPerm = 56.00;
+    private double lonPerm = 56.14;
+
+    private TextView tempTextView;
+    private TextView speedwindTextView;
+    private TextView humidityTextView;
+    private ImageView weatherImageView;
 
     private static final int PLOT_LOADER = 123;
     PlotCursorAdapter plotCursorAdapter;
@@ -38,6 +62,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        tempTextView = findViewById(R.id.tempTextView);
+        speedwindTextView = findViewById(R.id.speedwindTextView);
+        humidityTextView = findViewById(R.id.humidityTextView);
+        weatherImageView = findViewById(R.id.weatherImageView);
+        new Weather(latPerm, lonPerm).execute();
 
         dataListView = findViewById(R.id.dataListView);
 
@@ -118,4 +148,104 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         plotCursorAdapter.swapCursor(null);
     }
+
+    private class Weather extends AsyncTask<Void, Void, String> {
+        private double lat;
+        private double lon;
+        private String key = "e346a02ad9bcf046efd2fd3cc9957c6c";
+
+        public Weather (double lat, double lon){
+            this.lat = lat;
+            this.lon = lon;
+        }
+
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            String content = getContent("https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon +"&appid=" + key);
+            return content;
+        }
+
+        protected void onPostExecute(String content) {
+            try {
+                JSONObject json = new JSONObject(content);
+                Log.d("JSON", "---------------------------------------------");
+                Log.d("JSON", content);
+                double temp = json.getJSONObject("main").getDouble("temp") - 274.15;
+                Log.d("JSON", String.valueOf(temp));
+                Log.d("JSON", String.valueOf(json.getJSONArray("weather").getJSONObject(0).getString("main")));
+                String weath = json.getJSONArray("weather").getJSONObject(0).getString("main");
+                double speed = json.getJSONObject("wind").getDouble("speed");
+                int humidity = json.getJSONObject("main").getInt("humidity");
+                String ruWeather;
+
+//                weath = "Clear";
+
+                if(weath == "Thunderstorm"){
+                    weatherImageView.setImageResource(R.drawable.blustery);
+                    ruWeather = "Гроза";
+                } else if(weath == "Drizzle" || weath == "Rain") {
+                    weatherImageView.setImageResource(R.drawable.rainy);
+                    ruWeather = "Дождь";
+                } else if (weath == "Snow"){
+                    weatherImageView.setImageResource(R.drawable.snowy);
+                    ruWeather = "Снег";
+                } else if (weath == "Atmosphere"){
+                    weatherImageView.setImageResource(R.drawable.windy);
+                    ruWeather = "Туман";
+                } else if(weath == "Clear"){
+                    weatherImageView.setImageResource(R.drawable.sun);
+                    ruWeather = "Безоблачно";
+                } else {
+                    weatherImageView.setImageResource(R.drawable.cloudy);
+                    ruWeather = "Облачно";
+                }
+
+                tempTextView.setText(String.valueOf((int)temp) + "º " + ruWeather);
+                speedwindTextView.setText("Ветер " + String.valueOf(speed) + "м/с");
+                humidityTextView.setText("Влажность " + String.valueOf(humidity) + "%");
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private String getContent(String path) {
+
+            try {
+                URL url = new URL(path);
+                HttpsURLConnection c = (HttpsURLConnection) url.openConnection();
+                c.setRequestMethod("GET");
+                c.setReadTimeout(20000);
+                c.connect();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                String content = "";
+                String line = "";
+
+                while((line = reader.readLine()) != null){
+                    content += line + "\n";
+                }
+
+                return content;
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return "";
+        }
+
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
+
 }

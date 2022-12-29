@@ -20,6 +20,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -33,7 +36,6 @@ public class AddTreeActivity extends AppCompatActivity implements LoaderManager.
     private EditText nameTreeEditText;
     private EditText varietyEditText;
     private EditText dataPlantingEditText;
-    private EditText wikipediaTreeEditText;
 
     private int idPlot;
 
@@ -59,7 +61,28 @@ public class AddTreeActivity extends AppCompatActivity implements LoaderManager.
         nameTreeEditText = findViewById(R.id.nameTreeEditText);
         varietyEditText = findViewById(R.id.varietyEditText);
         dataPlantingEditText = findViewById(R.id.dataPlantingEditText);
-        wikipediaTreeEditText = findViewById(R.id.wikipediaTreeEditText);
+
+        final WebView wv = findViewById(R.id.wikipediaWebView);
+        wv.getSettings().setJavaScriptEnabled(true);
+        wv.loadData("<html><head></head><body><h1>Head</h1></body></html>", "text/html", "UTF-8");
+        Button b = findViewById(R.id.searchButton);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String firstWord = nameTreeEditText.getText().toString().trim();
+                String secondWord = varietyEditText.getText().toString().trim();
+
+                if(firstWord == ""){
+                    Toast.makeText(AddTreeActivity.this, "Не введено название рассады", Toast.LENGTH_LONG).show();
+                } else if(secondWord == ""){
+                    Toast.makeText(AddTreeActivity.this, "Не введен сорт рассады", Toast.LENGTH_LONG).show();
+                } else {
+                    String link = "https://ru.wikipedia.org/wiki/" + firstWord.replace(' ', '_') + '_' +
+                            secondWord.replace(' ', '_');
+                    wv.loadUrl(link);
+                }
+            }
+        });
     }
 
     @Override
@@ -134,7 +157,6 @@ public class AddTreeActivity extends AppCompatActivity implements LoaderManager.
         String nameTree = nameTreeEditText.getText().toString().trim();
         String variety = varietyEditText.getText().toString().trim();
         String dataPlanting = dataPlantingEditText.getText().toString().trim();
-        String wikipedia = wikipediaTreeEditText.getText().toString().trim();
         if(TextUtils.isEmpty(nameTree)){
             Toast.makeText(this, "Введите название дерева", Toast.LENGTH_LONG).show();
             return;
@@ -153,7 +175,6 @@ public class AddTreeActivity extends AppCompatActivity implements LoaderManager.
         contentValues.put(TreeInfo.KEY_TREE_NAME, nameTree);
         contentValues.put(TreeInfo.KEY_TREE_VARIETY, variety);
         contentValues.put(TreeInfo.KEY_TREE_DATA_PLANTING, dataPlanting);
-        contentValues.put(TreeInfo.KEY_TREE_WIKIPEDIA, wikipedia);
         contentValues.put(TreeInfo.KEY_TREE_X_LOCATION, x_location);
         contentValues.put(TreeInfo.KEY_TREE_Y_LOCATION, y_location);
 
@@ -193,7 +214,6 @@ public class AddTreeActivity extends AppCompatActivity implements LoaderManager.
                 TreeInfo.KEY_TREE_NAME,
                 TreeInfo.KEY_TREE_VARIETY,
                 TreeInfo.KEY_TREE_DATA_PLANTING,
-                TreeInfo.KEY_TREE_WIKIPEDIA,
                 TreeInfo.KEY_TREE_X_LOCATION,
                 TreeInfo.KEY_TREE_Y_LOCATION
         };
@@ -214,19 +234,16 @@ public class AddTreeActivity extends AppCompatActivity implements LoaderManager.
             int nameTreeColumnIndex = data.getColumnIndex(TreeInfo.KEY_TREE_NAME);
             int varietyTreeColumnIndex = data.getColumnIndex(TreeInfo.KEY_TREE_VARIETY);
             int dataPlantingColumnIndex = data.getColumnIndex(TreeInfo.KEY_TREE_DATA_PLANTING);
-            int wikipediaColumnIndex = data.getColumnIndex(TreeInfo.KEY_TREE_WIKIPEDIA);
 
             Log.d("Error 7", "error 7");
             String nameTree = data.getString(nameTreeColumnIndex);
             String varietyTree = data.getString(varietyTreeColumnIndex);
             String dataPlanting = data.getString(dataPlantingColumnIndex);
-            String wikipedia = data.getString(wikipediaColumnIndex);
 
             Log.d("Error 8", "error 8");
             nameTreeEditText.setText(nameTree);
             varietyEditText.setText(varietyTree);
             dataPlantingEditText.setText(dataPlanting);
-            wikipediaTreeEditText.setText(wikipedia);
         }
     }
 

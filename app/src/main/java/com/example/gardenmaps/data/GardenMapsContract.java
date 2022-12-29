@@ -54,7 +54,6 @@ public final class GardenMapsContract {
         public static final String KEY_TREE_NAME = "name_tree";
         public static final String KEY_TREE_VARIETY = "tree_variety";
         public static final String KEY_TREE_DATA_PLANTING = "data_planting";
-        public static final String KEY_TREE_WIKIPEDIA = "wikipedia";
         public static final String KEY_TREE_X_LOCATION = "x_location";
         public static final String KEY_TREE_Y_LOCATION = "y_location";
 

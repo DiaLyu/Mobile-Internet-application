@@ -32,7 +32,6 @@ public class GardenMapsDBOpenHelper extends SQLiteOpenHelper {
                 + TreeInfo.KEY_TREE_NAME + " TEXT, "
                 + TreeInfo.KEY_TREE_VARIETY + " TEXT, "
                 + TreeInfo.KEY_TREE_DATA_PLANTING + " TEXT, "
-                + TreeInfo.KEY_TREE_WIKIPEDIA + " TEXT, "
                 + TreeInfo.KEY_TREE_X_LOCATION + " INTEGER, "
                 + TreeInfo.KEY_TREE_Y_LOCATION + " INTEGER, "
                 + "FOREIGN KEY(" + TreeInfo.KEY_ID + ") REFERENCES "

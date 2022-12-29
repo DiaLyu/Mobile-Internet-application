@@ -101,28 +101,28 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:fontFamily="@font/inter_semibold"
+            android:gravity="center_vertical"
             android:text="Википедия"
             android:textColor="#000000"
             android:textSize="16sp" />
 
+        <Button
+            android:id="@+id/searchButton"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="2"
+            android:text="Найти" />
+
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/wikipediaTreeEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/edittext_descr_style"
-        android:gravity="top|start"
-        android:inputType="textMultiLine"
-        android:fontFamily="@font/inter_semibold"
-        android:textSize="14sp"
-        android:textColor="@color/black"
-        android:lines="8"
-        android:maxLines="10"
-        android:minLines="6"
-        android:scrollbars="vertical" />
+    <WebView
+        android:id="@+id/wikipediaWebView"
+        android:layout_width="383dp"
+        android:layout_height="96dp"
+        android:scrollbarAlwaysDrawHorizontalTrack="true"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:visibility="invisible" />
 
 </LinearLayout>
