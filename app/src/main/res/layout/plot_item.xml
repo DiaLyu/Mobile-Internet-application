@@ -2,13 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:paddingLeft="5dp">
 
     <TextView
         android:id="@+id/namePlotTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/inter_semibold"
+        android:text="Участок"
+        android:textColor="#000000"
         android:textSize="16sp" />
 
     <TextView
@@ -16,6 +21,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/inter_semibold"
+        android:paddingTop="3dp"
+        android:text="Калининград"
+        android:textColor="#504E4E"
         android:textSize="12sp" />
 
 </LinearLayout>

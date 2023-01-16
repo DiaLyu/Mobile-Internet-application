@@ -3,6 +3,7 @@ package com.example.gardenmaps;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NavUtils;
 import androidx.core.content.FileProvider;
@@ -19,15 +20,19 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,9 +44,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
-public class PlotMapActivity extends AppCompatActivity{
+public class PlotMapActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final int MAP_PLOT_LOADER = 213;
     private static final int LIST_TREE_LOADER = 524;
@@ -53,14 +59,18 @@ public class PlotMapActivity extends AppCompatActivity{
     private int widthPlot;
     private int lengthPlot;
 
-    ListView dataListView;
+    ConstraintLayout c_layout;
+//    ListView dataListView;
+    private ArrayList<Integer> idList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plot_map);
 
-        dataListView = findViewById(R.id.dataTreeListView);
+//        dataListView = findViewById(R.id.dataTreeListView);
+        c_layout = findViewById(R.id.constraintLayout);
+        idList = new ArrayList<>();
 
         Intent intent = getIntent();
 
@@ -85,20 +95,20 @@ public class PlotMapActivity extends AppCompatActivity{
         });
 
         treeCursorAdapter = new TreeCursorAdapter(this, null, false);
-        dataListView.setAdapter(treeCursorAdapter);
+//        dataListView.setAdapter(treeCursorAdapter);
         getSupportLoaderManager().initLoader(MAP_PLOT_LOADER, null, loader);
         getSupportLoaderManager().initLoader(LIST_TREE_LOADER, null, loader);
 
-        dataListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent_update_tree = new Intent(PlotMapActivity.this, AddTreeActivity.class);
-                Uri currentUri = ContentUris.withAppendedId(TreeInfo.CONTENT_URI, l);
-                intent_update_tree.setData(currentUri);
-                intent_update_tree.putExtra("idPlot", idPlot);
-                startActivity(intent_update_tree);
-            }
-        });
+//        dataListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Intent intent_update_tree = new Intent(PlotMapActivity.this, AddTreeActivity.class);
+//                Uri currentUri = ContentUris.withAppendedId(TreeInfo.CONTENT_URI, l);
+//                intent_update_tree.setData(currentUri);
+//                intent_update_tree.putExtra("idPlot", idPlot);
+//                startActivity(intent_update_tree);
+//            }
+//        });
 
     }
 
@@ -121,7 +131,7 @@ public class PlotMapActivity extends AppCompatActivity{
                 return true;
 
             case R.id.main_screen:
-
+                finish();
                 return true;
 
             case android.R.id.home:
@@ -180,7 +190,53 @@ public class PlotMapActivity extends AppCompatActivity{
             switch(loader.getId()){
                 case LIST_TREE_LOADER:
                     Cursor data1 = rawQueryWhere(TreeInfo.TABLE_NAME, TreeInfo.KEY_PLOT_ID);
-                    treeCursorAdapter.swapCursor(data1);
+//                    treeCursorAdapter.swapCursor(data1);
+                    while (data1.moveToNext()){
+                        int idTreeColumnIndex = data1.getColumnIndex(TreeInfo.KEY_ID);
+                        int idPlotTreesColumnIndex = data1.getColumnIndex(TreeInfo.KEY_PLOT_ID);
+                        int nameTreeColumnIndex = data1.getColumnIndex(TreeInfo.KEY_TREE_NAME);
+                        int varietyColumnIndex = data1.getColumnIndex(TreeInfo.KEY_TREE_VARIETY);
+                        int dataPlantingColumnIndex = data1.getColumnIndex(TreeInfo.KEY_TREE_DATA_PLANTING);
+                        int xLocationColumnIndex = data1.getColumnIndex(TreeInfo.KEY_TREE_X_LOCATION);
+                        int yLocationColumnIndex = data1.getColumnIndex(TreeInfo.KEY_TREE_Y_LOCATION);
+
+                        int idTree = data1.getInt(idTreeColumnIndex);
+                        String nameTree = data1.getString(nameTreeColumnIndex);
+                        String variety = data1.getString(varietyColumnIndex);
+                        String dataPlanting = data1.getString(dataPlantingColumnIndex);
+                        int xLocation = data1.getInt(xLocationColumnIndex);
+                        int yLocation = data1.getInt(yLocationColumnIndex);
+
+                        idList.add(idTree);
+
+                        ImageButton imBtn = new ImageButton(PlotMapActivity.this);
+                        imBtn.setId(idTree);
+                        imBtn.setMaxWidth(62);
+                        imBtn.setMaxHeight(62);
+                        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);;
+                        Log.d("PARAMS", xLocation + " " + yLocation);
+//                        params.leftMargin = xLocation;
+//                        params.topMargin = yLocation;
+                        final float scale = getResources().getDisplayMetrics().density;
+                        Log.d("SCALE_SCREEN", scale + "");
+                        params.setMargins((int) (xLocation * scale + 0.5f), yLocation, 0, 0); //bottom margin is 25 here (change it as u wish)
+                        params.startToStart = R.id.constraintLayout;
+                        params.topToTop = R.id.constraintLayout;
+                        imBtn.setLayoutParams(params);
+                        imBtn.setBackgroundColor(007500);
+                        imBtn.setImageResource(R.drawable.tree_img);
+                        imBtn.setOnClickListener(PlotMapActivity.this);
+                        c_layout.addView(imBtn);
+
+                        TextView txtImgBtn = new TextView(PlotMapActivity.this);
+                        txtImgBtn.setText(nameTree);
+                        txtImgBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                        ConstraintLayout.LayoutParams params_2 = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                        params_2.bottomToTop = imBtn.getId();
+                        params_2.startToStart = imBtn.getId();
+                        txtImgBtn.setLayoutParams(params_2);
+                        c_layout.addView(txtImgBtn);
+                    }
                     break;
                 case MAP_PLOT_LOADER:
                     if(data.moveToFirst()){
@@ -204,7 +260,8 @@ public class PlotMapActivity extends AppCompatActivity{
         public void onLoaderReset(Loader loader) {
             switch(loader.getId()){
                 case LIST_TREE_LOADER:
-                    treeCursorAdapter.swapCursor(null);
+                    Log.d("ONLOADERRESET", "я обновился!!!!!!!!!!!!!!!!");
+//                    treeCursorAdapter.swapCursor(null);
                     break;
                 case MAP_PLOT_LOADER:
                     break;
@@ -218,5 +275,16 @@ public class PlotMapActivity extends AppCompatActivity{
 
         Cursor cursor = db.rawQuery("SELECT * FROM " + tableName + " WHERE " + tableColumn + "=?", new String[]{""+idPlot});
         return cursor;
+    }
+
+    @Override
+    public void onClick(View view) {
+        Log.d("VIEW ARRAYLIST", view.getId() + "");
+        Log.d("ARRAYLIST", idList.toString());
+        Intent intent_update_tree = new Intent(PlotMapActivity.this, AddTreeActivity.class);
+        Uri currentUri = ContentUris.withAppendedId(TreeInfo.CONTENT_URI, view.getId());
+        intent_update_tree.setData(currentUri);
+        intent_update_tree.putExtra("idPlot", idPlot);
+        startActivity(intent_update_tree);
     }
 }

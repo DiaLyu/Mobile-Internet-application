@@ -36,6 +36,8 @@ public class AddTreeActivity extends AppCompatActivity implements LoaderManager.
     private EditText nameTreeEditText;
     private EditText varietyEditText;
     private EditText dataPlantingEditText;
+    private EditText xLocationEditText;
+    private EditText yLocationEditText;
 
     private int idPlot;
 
@@ -61,6 +63,8 @@ public class AddTreeActivity extends AppCompatActivity implements LoaderManager.
         nameTreeEditText = findViewById(R.id.nameTreeEditText);
         varietyEditText = findViewById(R.id.varietyEditText);
         dataPlantingEditText = findViewById(R.id.dataPlantingEditText);
+        xLocationEditText = findViewById(R.id.xLocationEditText);
+        yLocationEditText = findViewById(R.id.yLocationEditText);
 
         final WebView wv = findViewById(R.id.wikipediaWebView);
         wv.getSettings().setJavaScriptEnabled(true);
@@ -164,9 +168,24 @@ public class AddTreeActivity extends AppCompatActivity implements LoaderManager.
             Toast.makeText(this, "Введите сорт", Toast.LENGTH_LONG).show();
             return;
         }
+        String xLocationStr = xLocationEditText.getText().toString().trim();
+        String yLocationStr = yLocationEditText.getText().toString().trim();
+        int x_location;
+        int y_location;
 
-        int x_location = 50;
-        int y_location = 50;
+        try{
+            x_location = Integer.parseInt(xLocationStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Некорректный ввод числа Х", Toast.LENGTH_LONG).show();
+            return;
+        }
+        try{
+            y_location = Integer.parseInt(yLocationStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Некорректный ввод числа Y", Toast.LENGTH_LONG).show();
+            return;
+        }
+
 
         Log.d("Ошибка 1", "error");
 
@@ -234,16 +253,22 @@ public class AddTreeActivity extends AppCompatActivity implements LoaderManager.
             int nameTreeColumnIndex = data.getColumnIndex(TreeInfo.KEY_TREE_NAME);
             int varietyTreeColumnIndex = data.getColumnIndex(TreeInfo.KEY_TREE_VARIETY);
             int dataPlantingColumnIndex = data.getColumnIndex(TreeInfo.KEY_TREE_DATA_PLANTING);
+            int xLocationColumnIndex = data.getColumnIndex(TreeInfo.KEY_TREE_X_LOCATION);
+            int yLocationColumnIndex = data.getColumnIndex(TreeInfo.KEY_TREE_Y_LOCATION);
 
             Log.d("Error 7", "error 7");
             String nameTree = data.getString(nameTreeColumnIndex);
             String varietyTree = data.getString(varietyTreeColumnIndex);
             String dataPlanting = data.getString(dataPlantingColumnIndex);
+            int xLocation = data.getInt(xLocationColumnIndex);
+            int yLocation = data.getInt(yLocationColumnIndex);
 
             Log.d("Error 8", "error 8");
             nameTreeEditText.setText(nameTree);
             varietyEditText.setText(varietyTree);
             dataPlantingEditText.setText(dataPlanting);
+            xLocationEditText.setText(xLocation + "");
+            yLocationEditText.setText(yLocation +"");
         }
     }
 

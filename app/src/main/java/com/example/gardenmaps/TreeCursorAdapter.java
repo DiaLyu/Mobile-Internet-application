@@ -28,17 +28,13 @@ public class TreeCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        TextView idPlotTextView = view.findViewById(R.id.idPlotTextView);
         TextView nameTreeTextView = view.findViewById(R.id.nameTreeTextView);
-        TextView varietyTreeTextView = view.findViewById(R.id.varietyTreeTextView);
 
         int idPlot = cursor.getInt(cursor.getColumnIndexOrThrow(TreeInfo.KEY_PLOT_ID));
         String nameTree = cursor.getString(cursor.getColumnIndexOrThrow(TreeInfo.KEY_TREE_NAME));
         String varietyTree = cursor.getString(cursor.getColumnIndexOrThrow(TreeInfo.KEY_TREE_VARIETY));
 
             // устанавливаем в элементы списка значения из базы данных
-        idPlotTextView.setText(""+idPlot);
         nameTreeTextView.setText(nameTree);
-        varietyTreeTextView.setText(varietyTree);
     }
 }
