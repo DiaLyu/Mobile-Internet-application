@@ -100,23 +100,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         LoaderManager.getInstance(this).initLoader(PLOT_LOADER, null, this);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.start_activity_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.downloadNewPlot:
-                return true;
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @NonNull
     @Override

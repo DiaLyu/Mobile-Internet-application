@@ -21,6 +21,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -51,7 +53,6 @@ public class PlotMapActivity extends AppCompatActivity implements View.OnClickLi
 
     private static final int MAP_PLOT_LOADER = 213;
     private static final int LIST_TREE_LOADER = 524;
-    TreeCursorAdapter treeCursorAdapter;
     Uri currentPlotUri;
 
     private int idPlot;
@@ -59,16 +60,17 @@ public class PlotMapActivity extends AppCompatActivity implements View.OnClickLi
     private int widthPlot;
     private int lengthPlot;
 
-    ConstraintLayout c_layout;
-//    ListView dataListView;
+    private ConstraintLayout c_layout;
+    private ImageView imageView;
+    private ConstraintLayout rootContent;
     private ArrayList<Integer> idList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plot_map);
+        findViews();
 
-//        dataListView = findViewById(R.id.dataTreeListView);
         c_layout = findViewById(R.id.constraintLayout);
         idList = new ArrayList<>();
 
@@ -94,21 +96,8 @@ public class PlotMapActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        treeCursorAdapter = new TreeCursorAdapter(this, null, false);
-//        dataListView.setAdapter(treeCursorAdapter);
         getSupportLoaderManager().initLoader(MAP_PLOT_LOADER, null, loader);
         getSupportLoaderManager().initLoader(LIST_TREE_LOADER, null, loader);
-
-//        dataListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Intent intent_update_tree = new Intent(PlotMapActivity.this, AddTreeActivity.class);
-//                Uri currentUri = ContentUris.withAppendedId(TreeInfo.CONTENT_URI, l);
-//                intent_update_tree.setData(currentUri);
-//                intent_update_tree.putExtra("idPlot", idPlot);
-//                startActivity(intent_update_tree);
-//            }
-//        });
 
     }
 
@@ -122,7 +111,10 @@ public class PlotMapActivity extends AppCompatActivity implements View.OnClickLi
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()){
             case R.id.share_plot:
-
+                takeScreenshot();
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
+                Bitmap bitmap = bitmapDrawable.getBitmap();
+                shareImage(bitmap);
                 return true;
             case R.id.info_plot:
                 Intent intent_2 = new Intent(PlotMapActivity.this, AddPlotActivity.class);
@@ -193,7 +185,6 @@ public class PlotMapActivity extends AppCompatActivity implements View.OnClickLi
 //                    treeCursorAdapter.swapCursor(data1);
                     while (data1.moveToNext()){
                         int idTreeColumnIndex = data1.getColumnIndex(TreeInfo.KEY_ID);
-                        int idPlotTreesColumnIndex = data1.getColumnIndex(TreeInfo.KEY_PLOT_ID);
                         int nameTreeColumnIndex = data1.getColumnIndex(TreeInfo.KEY_TREE_NAME);
                         int varietyColumnIndex = data1.getColumnIndex(TreeInfo.KEY_TREE_VARIETY);
                         int dataPlantingColumnIndex = data1.getColumnIndex(TreeInfo.KEY_TREE_DATA_PLANTING);
@@ -202,8 +193,6 @@ public class PlotMapActivity extends AppCompatActivity implements View.OnClickLi
 
                         int idTree = data1.getInt(idTreeColumnIndex);
                         String nameTree = data1.getString(nameTreeColumnIndex);
-                        String variety = data1.getString(varietyColumnIndex);
-                        String dataPlanting = data1.getString(dataPlantingColumnIndex);
                         int xLocation = data1.getInt(xLocationColumnIndex);
                         int yLocation = data1.getInt(yLocationColumnIndex);
 
@@ -286,5 +275,60 @@ public class PlotMapActivity extends AppCompatActivity implements View.OnClickLi
         intent_update_tree.setData(currentUri);
         intent_update_tree.putExtra("idPlot", idPlot);
         startActivity(intent_update_tree);
+    }
+
+//    //идентификаторы просмотров
+    private void findViews() {
+        imageView = (ImageView) findViewById(R.id.screenImageView);
+        rootContent = (ConstraintLayout) findViewById(R.id.rootContent);
+    }
+
+    private void shareImage(Bitmap bitmap) {
+        Uri uri = getmageToShare(bitmap);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        //отправка сообщения
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        //отправка текста
+        intent.putExtra(Intent.EXTRA_TEXT, "Sharing Image");
+        //тип изображения
+        intent.setType("image/png");
+        startActivity(Intent.createChooser(intent, "Share Via"));
+    }
+
+    //получение uri адреса
+    private Uri getmageToShare(Bitmap bitmap) {
+        File imagefolder = new File(getCacheDir(), "images");
+        Uri uri = null;
+        try {
+            imagefolder.mkdirs();
+            File file = new File(imagefolder, "shared_image.png");
+            FileOutputStream outputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            uri = FileProvider.getUriForFile(this, "com.anni.shareimage.fileprovider", file);
+        } catch (Exception e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        return uri;
+    }
+
+    //скриншот
+    private void takeScreenshot() {
+        Bitmap b = null;
+        b = ScreenshotUtils.getScreenShot(rootContent);
+        //изображение существует
+        if (b != null) {
+            showScreenShotImage(b);//показ изображения
+            File saveFile = ScreenshotUtils.getMainDirectoryName(this);//получить путь для скриншота
+            File file = ScreenshotUtils.store(b, "screenshot" + ".jpg", saveFile);//сохранение изображения
+            Toast.makeText(this, "изображение сохранено", Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(this, "ошибка", Toast.LENGTH_SHORT).show();
+    }
+
+    //показать изображение скриншота
+    private void showScreenShotImage(Bitmap b) {
+        imageView.setImageBitmap(b);
     }
 }
