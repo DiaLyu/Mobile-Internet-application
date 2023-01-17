@@ -7,22 +7,6 @@
     android:background="#D9D6CF"
     tools:context=".PlotMapActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="11dp"
-        android:layout_marginTop="18dp"
-        android:layout_marginEnd="11dp"
-        android:layout_marginBottom="18dp"
-        android:background="@drawable/green_rectangle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     <!--        <ListView-->
     <!--            android:id="@+id/dataTreeListView"-->
@@ -34,6 +18,24 @@
     <!--            app:layout_constraintEnd_toEndOf="parent"-->
     <!--            app:layout_constraintStart_toStartOf="parent"-->
     <!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="11dp"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/green_rectangle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addTreeFloatingActionButton"

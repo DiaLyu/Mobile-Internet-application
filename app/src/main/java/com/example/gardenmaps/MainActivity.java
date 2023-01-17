@@ -46,8 +46,8 @@ import javax.net.ssl.HttpsURLConnection;
 // главный экран
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private double latPerm = 56.00;
-    private double lonPerm = 56.14;
+    private double latPerm = 58.01;
+    private double lonPerm = 56.25;
 
     private TextView tempTextView;
     private TextView speedwindTextView;
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private class Weather extends AsyncTask<Void, Void, String> {
         private double lat;
         private double lon;
-        private String key = "";
+        private String myApiKey = BuildConfig.API_KEY;
 
         public Weather (double lat, double lon){
             this.lat = lat;
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         @Override
         protected String doInBackground(Void... voids) {
-            String content = getContent("https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon +"&appid=" + key);
+            String content = getContent("https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon +"&appid=" + myApiKey);
             return content;
         }
 
