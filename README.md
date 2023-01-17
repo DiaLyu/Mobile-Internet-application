@@ -30,14 +30,14 @@ ____
 [Ссылка на Figma](https://www.figma.com/file/WTgZHccmoqRfi1nr9tXf8D/Garden-Application?node-id=0%3A1&t=lTV5qti7NxaPDrvz-0) с интерфейсом мобильного приложения
 
 ### Физическая модель базы данных
-![Модель базы данных](/Mobile-Internet-application/img/DataBase%20model.drawio%20(4).png)
+![Модель базы данных](/img/DataBase%20model.drawio%20(4).png)
 
 ### Результат программы
-![Список участков](/Mobile-Internet-application/img/list_plots.jpg) ![Карта участка](/Mobile-Internet-application/img/plot_map.jpg) ![Добавить участок](/Mobile-Internet-application/img/add_plot.jpg) ![Добавить дерево](/Mobile-Internet-application/img/add_tree.jpg)
+![Список участков](/img/list_plots.jpg) ![Карта участка](/img/plot_map.jpg) ![Добавить участок](/img/add_plot.jpg) ![Добавить дерево](/img/add_tree.jpg)
 
 #### Редактирование данных участков и деревьев
-![Редактирование участка](/Mobile-Internet-application/img/update_plot.jpg)
+![Редактирование участка](/img/update_plot.jpg)
 
 #### Работа с интернетом
-![Google скриншот](/Mobile-Internet-application/img/screen_gmail.jpg) ![Telegram screenshot](/Mobile-Internet-application/img/screen_telegram.jpg)
+![Google скриншот](/img/screen_gmail.jpg) ![Telegram screenshot](/img/screen_telegram.jpg)
 
